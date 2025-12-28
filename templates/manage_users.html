@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة المستخدمين - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <h1>إدارة المستخدمين</h1>
+        <a href="{{ url_for('register_user') }}" class="btn btn-primary">
+            ➕ إضافة مستخدم جديد
+        </a>
+    </div>
+
+    <div class="users-table-container">
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>رقم المستخدم</th>
+                    <th>اسم المستخدم</th>
+                    <th>الدور</th>
+                    <th>الحالة</th>
+                    <th>آخر تسجيل دخول</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.UserID }}</td>
+                    <td>{{ user.Username }}</td>
+                    <td>
+                        <span class="role-badge role-{{ user.RoleName }}">
+                            {{ user.RoleName }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if user.IsActive %}
+                            <span class="status-badge status-active">نشط</span>
+                        {% else %}
+                            <span class="status-badge status-inactive">غير نشط</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.LastLogin %}
+                            {{ user.LastLogin.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                            لم يسجل دخول بعد
+                        {% endif %}
+                    </td>
+                    <td class="actions-cell">
+                        <a href="{{ url_for('toggle_user_status', user_id=user.UserID) }}" 
+                           class="btn-action btn-toggle"
+                           onclick="return confirm('هل تريد تغيير حالة هذا المستخدم؟')">
+                            {% if user.IsActive %}
+                                🔒 تعطيل
+                            {% else %}
+                                🔓 تفعيل
+                            {% endif %}
+                        </a>
+                        {% if user.UserID != session.get('user_id') %}
+                        <a href="{{ url_for('delete_user', user_id=user.UserID) }}" 
+                           class="btn-action btn-delete"
+                           onclick="return confirm('هل أنت متأكد من حذف هذا المستخدم؟')">
+                            🗑️ حذف
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.users-table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.users-table th {
+    padding: 15px;
+    text-align: right;
+    font-weight: 600;
+}
+
+.users-table td {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.users-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.role-Admin {
+    background-color: #dc3545;
+    color: white;
+}
+
+.role-Supervisor {
+    background-color: #007bff;
+    color: white;
+}
+
+.role-DepartmentHead {
+    background-color: #28a745;
+    color: white;
+}
+
+.role-Researcher {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-toggle {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-toggle:hover {
+    background-color: #138496;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+</style>
+{% endblock %}

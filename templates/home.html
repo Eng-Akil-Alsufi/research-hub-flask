@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}الرئيسية - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">مرحباً بك في مركز الأبحاث</h1>
+            <p class="hero-subtitle">ابحث عن آلاف الأبحاث الأكاديمية في مكان واحد</p>
+            
+            <form action="{{ url_for('search') }}" method="GET" class="search-form-large">
+                <div class="search-input-wrapper">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="ابحث عن عنوان البحث، المؤلف، أو الموضوع..." 
+                        class="search-input"
+                        required
+                    >
+                    <button type="submit" class="search-button">
+                        🔍 بحث
+                    </button>
+                </div>
+            </form>
+
+            <div class="quick-link">
+                <a href="{{ url_for('advanced_search') }}" class="link-advanced">
+                    أو جرب البحث المتقدم →
+                </a>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_papers }}</div>
+                <div class="stat-label">بحث أكاديمي</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_supervisors }}</div>
+                <div class="stat-label">مشرف أكاديمي</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

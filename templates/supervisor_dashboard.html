@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة تحكم المشرف - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <div>
+            <h1>أهلاً بك د. {{ supervisor.FirstName }} {{ supervisor.LastName }}</h1>
+            <p class="text-muted">{{ supervisor.AcademicRank }} - {{ supervisor.DepartmentName }}</p>
+        </div>
+        <div>
+            <a href="{{ url_for('add_research') }}" class="btn btn-primary">
+                ➕ إضافة بحث جديد
+            </a>
+        </div>
+    </div>
+
+    <div class="papers-section">
+        <h2>أبحاثك ({{ papers|length }})</h2>
+
+        {% if papers %}
+            <div class="papers-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>العنوان</th>
+                            <th>المؤلف</th>
+                            <th>السنة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paper in papers %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('research_details', paper_id=paper.PaperID) }}">
+                                        {{ paper.Title }}
+                                    </a>
+                                </td>
+                                <td>{{ paper.StudentName }}</td>
+                                <td>{{ paper.PublicationYear }}</td>
+                                <td class="actions-cell">
+                                    <a href="{{ url_for('edit_research', paper_id=paper.PaperID) }}" class="btn btn-sm btn-secondary">
+                                        ✏️ تعديل
+                                    </a>
+                                    <a href="{{ url_for('delete_research', paper_id=paper.PaperID) }}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('هل أنت متأكد من حذف هذا البحث؟')">
+                                        🗑️ حذف
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>لم تقم بإضافة أي أبحاث بعد</p>
+                <a href="{{ url_for('add_research') }}" class="btn btn-primary">إضافة أول بحث</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

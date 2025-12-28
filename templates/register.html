@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}إنشاء مستخدم جديد - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="login-container">
+        <div class="login-card">
+            <h1 class="login-title">إنشاء مستخدم جديد</h1>
+            <p class="login-subtitle">
+                {% if is_admin %}
+                    إضافة مستخدم جديد إلى النظام (صلاحيات المدير)
+                {% else %}
+                    إنشاء حساب باحث جديد
+                {% endif %}
+            </p>
+
+            <form action="{{ url_for('register_user') }}" method="POST" class="login-form" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="username">اسم المستخدم</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-control" 
+                        required 
+                        autofocus
+                        placeholder="مثال: المهندس.عقيل"
+                    >
+                    <small class="form-text">يجب أن يكون اسم المستخدم فريداً</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <div class="password-input-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-control" 
+                            required
+                            minlength="3"
+                            placeholder="أدخل كلمة المرور"
+                        >
+                        <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                            <svg id="eye-icon-password" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <small class="form-text">يجب أن تكون 3 أحرف على الأقل</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="role_id">الدور الوظيفي</label>
+                    <select 
+                        id="role_id" 
+                        name="role_id" 
+                        class="form-control" 
+                        required
+                    >
+                        <option value=""> اختر الدور </option>
+                        {% for role in roles %}
+                            <option value="{{ role.RoleID }}" data-role-name="{{ role.RoleName }}">
+                                {{ role.RoleName }}
+                                {% if not is_admin and role.RoleID != 4 %}
+                                    (يتطلب صلاحيات مدير)
+                                {% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <small class="form-text">
+                        {% if is_admin %}
+                            يمكنك إنشاء حسابات بجميع الصلاحيات
+                        {% else %}
+                            يمكنك فقط إنشاء حساب باحث
+                        {% endif %}
+                    </small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        إنشاء المستخدم
+                    </button>
+                    <a href="{{ url_for('login') }}" class="btn btn-secondary btn-block">
+                        العودة لتسجيل الدخول
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const isAdmin = {{ 'true' if is_admin else 'false' }};
+
+function validateForm() {
+    if (!isAdmin) {
+        const roleSelect = document.getElementById('role_id');
+        const selectedRoleId = parseInt(roleSelect.value);
+        const selectedOption = roleSelect.options[roleSelect.selectedIndex];
+        const roleName = selectedOption.getAttribute('data-role-name');
+        
+        if (selectedRoleId !== 4) {
+            alert('ليس لديك صلاحية لإنشاء حساب من نوع "' + roleName + '". يمكنك فقط إنشاء حساب باحث.');
+            return false;
+        }
+    }
+    return true;
+}
+
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById('eye-icon-' + inputId);
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+    } else {
+        input.type = 'password';
+        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+    }
+}
+</script>
+
+<style>
+.form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    padding-left: 40px;
+    width: 100%;
+}
+
+.toggle-password {
+    position: absolute;
+    left: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة تحكم رئيس القسم - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <div>
+            <h1>لوحة تحكم رئيس القسم</h1>
+            <p class="text-muted">د. {{ dept_head.FirstName }} {{ dept_head.LastName }} - {{ dept_head.DepartmentName }}</p>
+        </div>
+    </div>
+
+    <div class="analytics-section">
+        <h2>📊 التقارير التحليلية</h2>
+
+        <div class="chart-container">
+            <h3>عدد الأبحاث لكل مشرف</h3>
+            <div class="bar-chart">
+                {% for stat in supervisor_stats %}
+                    <div class="bar-item">
+                        <div class="bar-label">{{ stat.SupervisorName }}</div>
+                        <div class="bar-wrapper">
+                            <div class="bar-fill" style="width: {{ (stat.PaperCount / supervisor_stats[0].PaperCount * 100) if supervisor_stats[0].PaperCount > 0 else 0 }}%">
+                                <span class="bar-value">{{ stat.PaperCount }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>أكثر 5 مواضيع بحثية شيوعاً</h3>
+            {% if topic_stats %}
+                <div class="topics-chart">
+                    {% for stat in topic_stats %}
+                        <div class="topic-item">
+                            <div class="topic-rank">{{ loop.index }}</div>
+                            <div class="topic-info">
+                                <div class="topic-name">{{ stat.TopicName }}</div>
+                                <div class="topic-count">{{ stat.TopicCount }} بحث</div>
+                            </div>
+                            <div class="topic-bar">
+                                <div class="topic-bar-fill" style="width: {{ (stat.TopicCount / topic_stats[0].TopicCount * 100) }}%"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">لا توجد بيانات متاحة</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

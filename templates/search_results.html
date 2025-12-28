@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}نتائج البحث - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>نتائج البحث{% if query %}: "{{ query }}"{% endif %}</h1>
+        <p class="results-count">تم العثور على {{ results|length }} نتيجة</p>
+    </div>
+
+    {% if results %}
+        <div class="results-list">
+            {% for paper in results %}
+                <div class="result-card">
+                    <h2 class="result-title">
+                        <a href="{{ url_for('research_details', paper_id=paper.PaperID) }}">
+                            {{ paper.Title }}
+                        </a>
+                    </h2>
+                    <div class="result-meta">
+                        <span class="meta-item">
+                            <strong>المؤلف:</strong> {{ paper.StudentName }}
+                        </span>
+                        <span class="meta-item">
+                            <strong>المشرف:</strong> {{ paper.SupervisorName }}
+                        </span>
+                        <span class="meta-item">
+                            <strong>القسم:</strong> {{ paper.DepartmentName }}
+                        </span>
+                        <span class="meta-item">
+                            <strong>السنة:</strong> {{ paper.PublicationYear }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-results">
+            <p>😔 لم يتم العثور على نتائج مطابقة لبحثك</p>
+            <a href="{{ url_for('advanced_search') }}" class="btn btn-primary">جرب البحث المتقدم</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

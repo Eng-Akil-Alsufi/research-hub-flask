@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ paper.Title }} - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="paper-details">
+        <div class="paper-header">
+            <h1 class="paper-title">{{ paper.Title }}</h1>
+            <div class="paper-year">{{ paper.PublicationYear }}</div>
+        </div>
+
+        <div class="paper-section">
+            <h2>الملخص</h2>
+            <p class="paper-abstract">{{ paper.Abstract or 'لا يوجد ملخص متاح' }}</p>
+        </div>
+
+        <div class="paper-info-grid">
+            <div class="info-card">
+                <h3>المؤلف</h3>
+                <p><strong>{{ paper.StudentName }}</strong></p>
+                <p class="text-muted">{{ paper.StudentEmail }}</p>
+            </div>
+
+            <div class="info-card">
+                <h3>المشرف</h3>
+                <p><strong>{{ paper.SupervisorName }}</strong></p>
+                <p class="text-muted">{{ paper.AcademicRank }}</p>
+                <p class="text-muted">{{ paper.SupervisorEmail }}</p>
+            </div>
+
+            <div class="info-card">
+                <h3>القسم</h3>
+                <p><strong>{{ paper.DepartmentName }}</strong></p>
+                {% if paper.Faculty %}
+                    <p class="text-muted">{{ paper.Faculty }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if topics %}
+            <div class="paper-section">
+                <h2>الكلمات المفتاحية</h2>
+                <div class="topics-list">
+                    {% for topic in topics %}
+                        <span class="topic-tag">{{ topic }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if paper.FilePath %}
+            <div class="paper-actions">
+                <a href="{{ url_for('download_file', paper_id=paper.PaperID) }}" class="btn btn-primary btn-large">
+                    📥 تحميل البحث (PDF)
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

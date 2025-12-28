@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == 'add' %}إضافة بحث جديد{% else %}تعديل البحث{% endif %} - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>{% if mode == 'add' %}إضافة بحث جديد{% else %}تعديل البحث{% endif %}</h1>
+    </div>
+
+    <form action="{% if mode == 'add' %}{{ url_for('add_research') }}{% else %}{{ url_for('edit_research', paper_id=paper.PaperID) }}{% endif %}" 
+          method="POST" 
+          enctype="multipart/form-data" 
+          class="research-form">
+        
+        <div class="form-group">
+            <label for="title">عنوان البحث *</label>
+            <input 
+                type="text" 
+                id="title" 
+                name="title" 
+                class="form-control" 
+                value="{% if paper %}{{ paper.Title }}{% endif %}"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="abstract">الملخص</label>
+            <textarea 
+                id="abstract" 
+                name="abstract" 
+                class="form-control" 
+                rows="6"
+            >{% if paper %}{{ paper.Abstract }}{% endif %}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="year">سنة النشر *</label>
+                <input 
+                    type="number" 
+                    id="year" 
+                    name="year" 
+                    class="form-control" 
+                    value="{% if paper %}{{ paper.PublicationYear }}{% endif %}"
+                    min="1900" 
+                    max="2100"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="student_id">الطالب *</label>
+                <select id="student_id" name="student_id" class="form-control" required>
+                    <option value=""> اختر الطالب </option>
+                    {% for student in students %}
+                        <option value="{{ student.StudentID }}" 
+                                {% if paper and paper.StudentID == student.StudentID %}selected{% endif %}>
+                            {{ student.Name }} ({{ student.StudentID }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="department_id">القسم *</label>
+            <select id="department_id" name="department_id" class="form-control" required>
+                <option value=""> اختر القسم </option>
+                {% for department in departments %}
+                    <option value="{{ department.DepartmentID }}"
+                            {% if paper and paper.DepartmentID == department.DepartmentID %}selected{% endif %}>
+                        {{ department.DepartmentName }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>المواضيع / الكلمات المفتاحية</label>
+            <div class="topics-checkboxes">
+                {% for topic in topics %}
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            name="topics" 
+                            value="{{ topic.TopicID }}"
+                            {% if selected_topics and topic.TopicID in selected_topics %}checked{% endif %}
+                        >
+                        {{ topic.TopicName }}
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="file">ملف البحث (PDF)</label>
+            {% if paper and paper.FilePath %}
+                <p class="text-muted">الملف الحالي: {{ paper.FilePath }}</p>
+                <input type="hidden" name="existing_file_path" value="{{ paper.FilePath }}">
+            {% endif %}
+            <input 
+                type="file" 
+                id="file" 
+                name="file" 
+                class="form-control" 
+                accept=".pdf"
+            >
+            <small class="form-text">اختر ملف PDF جديد لاستبدال الملف الحالي (اختياري)</small>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if mode == 'add' %}➕ إضافة البحث{% else %}💾 حفظ التعديلات{% endif %}
+            </button>
+            <a href="{{ url_for('supervisor_dashboard') }}" class="btn btn-secondary">إلغاء</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

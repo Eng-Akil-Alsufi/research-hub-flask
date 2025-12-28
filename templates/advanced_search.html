@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}البحث المتقدم - Research Hub DB{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>البحث المتقدم</h1>
+        <p>استخدم الحقول التالية لتضييق نطاق البحث</p>
+    </div>
+
+    <form action="{{ url_for('advanced_search_results') }}" method="GET" class="advanced-search-form">
+        <div class="form-group">
+            <label for="title">عنوان البحث</label>
+            <input type="text" id="title" name="title" class="form-control" placeholder="أدخل كلمات من عنوان البحث">
+        </div>
+
+        <div class="form-group">
+            <label for="supervisor_id">المشرف</label>
+            <select id="supervisor_id" name="supervisor_id" class="form-control">
+                <option value=""> اختر المشرف </option>
+                {% for supervisor in supervisors %}
+                    <option value="{{ supervisor.SupervisorID }}">{{ supervisor.Name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="department_id">القسم</label>
+            <select id="department_id" name="department_id" class="form-control">
+                <option value=""> اختر القسم </option>
+                {% for department in departments %}
+                    <option value="{{ department.DepartmentID }}">{{ department.DepartmentName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="year">سنة النشر</label>
+            <input type="number" id="year" name="year" class="form-control" placeholder="مثال: 2024" min="1900" max="2100">
+        </div>
+
+        <div class="form-group">
+            <label for="topic_id">الموضوع</label>
+            <select id="topic_id" name="topic_id" class="form-control">
+                <option value=""> اختر الموضوع </option>
+                {% for topic in topics %}
+                    <option value="{{ topic.TopicID }}">{{ topic.TopicName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">🔍 بحث</button>
+            <button type="reset" class="btn btn-secondary">مسح الحقول</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
